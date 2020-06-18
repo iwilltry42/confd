@@ -24,15 +24,16 @@ type BackendsConfig = backends.Config
 type Config struct {
 	TemplateConfig
 	BackendsConfig
-	Interval      int    `toml:"interval"`
-	SecretKeyring string `toml:"secret_keyring"`
-	SRVDomain     string `toml:"srv_domain"`
-	SRVRecord     string `toml:"srv_record"`
-	LogLevel      string `toml:"log-level"`
-	Watch         bool   `toml:"watch"`
-	PrintVersion  bool
-	ConfigFile    string
-	OneTime       bool
+	Interval       int    `toml:"interval"`
+	SecretKeyring  string `toml:"secret_keyring"`
+	SRVDomain      string `toml:"srv_domain"`
+	SRVRecord      string `toml:"srv_record"`
+	LogLevel       string `toml:"log-level"`
+	Watch          bool   `toml:"watch"`
+	PrintVersion   bool
+	ConfigFile     string
+	OneTime        bool
+	ClientInsecure bool
 }
 
 var config Config
