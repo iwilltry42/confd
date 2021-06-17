@@ -7,8 +7,8 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/kelseyhightower/confd/backends/env"
-	"github.com/kelseyhightower/confd/log"
+	"github.com/iwilltry42/confd/backends/env"
+	"github.com/iwilltry42/confd/log"
 )
 
 // createTempDirs is a helper function which creates temporary directories

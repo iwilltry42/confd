@@ -1,7 +1,7 @@
 package backends
 
 import (
-	util "github.com/kelseyhightower/confd/util"
+	util "github.com/iwilltry42/confd/util"
 )
 
 type Config struct {

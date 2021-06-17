@@ -22,13 +22,14 @@
 package metadata // import "google.golang.org/grpc/metadata"
 
 import (
+	"context"
 	"fmt"
 	"strings"
-
-	"golang.org/x/net/context"
 )
 
-// DecodeKeyValue returns k, v, nil.  It is deprecated and should not be used.
+// DecodeKeyValue returns k, v, nil.
+//
+// Deprecated: use k and v directly instead.
 func DecodeKeyValue(k, v string) (string, string, error) {
 	return k, v, nil
 }
@@ -74,13 +75,9 @@ func Pairs(kv ...string) MD {
 		panic(fmt.Sprintf("metadata: Pairs got the odd number of input pairs for metadata: %d", len(kv)))
 	}
 	md := MD{}
-	var key string
-	for i, s := range kv {
-		if i%2 == 0 {
-			key = strings.ToLower(s)
-			continue
-		}
-		md[key] = append(md[key], s)
+	for i := 0; i < len(kv); i += 2 {
+		key := strings.ToLower(kv[i])
+		md[key] = append(md[key], kv[i+1])
 	}
 	return md
 }
@@ -93,6 +90,30 @@ func (md MD) Len() int {
 // Copy returns a copy of md.
 func (md MD) Copy() MD {
 	return Join(md)
+}
+
+// Get obtains the values for a given key.
+func (md MD) Get(k string) []string {
+	k = strings.ToLower(k)
+	return md[k]
+}
+
+// Set sets the value of a given key with a slice of values.
+func (md MD) Set(k string, vals ...string) {
+	if len(vals) == 0 {
+		return
+	}
+	k = strings.ToLower(k)
+	md[k] = vals
+}
+
+// Append adds the values to key k, not overwriting what was already stored at that key.
+func (md MD) Append(k string, vals ...string) {
+	if len(vals) == 0 {
+		return
+	}
+	k = strings.ToLower(k)
+	md[k] = append(md[k], vals...)
 }
 
 // Join joins any number of mds into a single MD.
@@ -170,12 +191,18 @@ func FromOutgoingContext(ctx context.Context) (MD, bool) {
 		return nil, false
 	}
 
-	mds := make([]MD, 0, len(raw.added)+1)
-	mds = append(mds, raw.md)
-	for _, vv := range raw.added {
-		mds = append(mds, Pairs(vv...))
+	out := raw.md.Copy()
+	for _, added := range raw.added {
+		if len(added)%2 == 1 {
+			panic(fmt.Sprintf("metadata: FromOutgoingContext got an odd number of input pairs for metadata: %d", len(added)))
+		}
+
+		for i := 0; i < len(added); i += 2 {
+			key := strings.ToLower(added[i])
+			out[key] = append(out[key], added[i+1])
+		}
 	}
-	return Join(mds...), ok
+	return out, ok
 }
 
 type rawMD struct {
