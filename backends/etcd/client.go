@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/coreos/etcd/client"
+	"github.com/iwilltry42/confd/log"
 	"golang.org/x/net/context"
-        "github.com/kelseyhightower/confd/log"
 )
 
 // Client is a wrapper around the etcd client
@@ -33,10 +33,10 @@ func NewEtcdClient(machines []string, cert, key, caCert string, clientInsecure b
 		TLSHandshakeTimeout: 10 * time.Second,
 	}
 
-        // Enable client insecure mode globally
-        if clientInsecure {
-                log.Warning("TLS Client config running insecure mode. Skip server CA verification.")
-        }
+	// Enable client insecure mode globally
+	if clientInsecure {
+		log.Warning("TLS Client config running insecure mode. Skip server CA verification.")
+	}
 
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: clientInsecure,
